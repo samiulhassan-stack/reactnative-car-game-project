@@ -1,0 +1,7 @@
+{
+  "name": "CarRacingGame",
+  "displayName": "Car Racing Game",
+  "version": "1.0.0",
+  "description": "A professional 2D car racing game built with React Native",
+  "main": "index.js"
+}
