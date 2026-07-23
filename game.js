@@ -1398,6 +1398,19 @@
     ctx.fillStyle = '#00ccff';
     ctx.fillText('E L I T E', W/2, titleY + 38);
     ctx.shadowBlur = 0;
+    
+    // Creator Credit - Upper position with style
+    ctx.font = 'italic 16px Arial';
+    ctx.textAlign = 'center';
+    ctx.shadowColor = '#000000';
+    ctx.shadowBlur = 4;
+    const creatorGrad = ctx.createLinearGradient(W/2 - 80, 0, W/2 + 80, 0);
+    creatorGrad.addColorStop(0, '#ffaa00');
+    creatorGrad.addColorStop(0.5, '#ffffff');
+    creatorGrad.addColorStop(1, '#ffaa00');
+    ctx.fillStyle = creatorGrad;
+    ctx.fillText('~ Created by Sami Ul Hassan ~', W/2, titleY + 70);
+    ctx.shadowBlur = 0;
     ctx.restore();
 
     // Mode buttons
@@ -1534,6 +1547,14 @@
     ctx.shadowBlur  = 16;
     ctx.fillText('GAME OVER', W/2, H/2 - 112);
     ctx.shadowBlur  = 0;
+
+    // Creator Credit - Styled
+    ctx.font = 'italic 14px Arial';
+    ctx.fillStyle = 'rgba(255,200,100,0.9)';
+    ctx.shadowColor = '#000000';
+    ctx.shadowBlur = 2;
+    ctx.fillText('~ Created by Sami Ul Hassan ~', W/2, H/2 - 85);
+    ctx.shadowBlur = 0;
 
     // Stats
     const lines = [

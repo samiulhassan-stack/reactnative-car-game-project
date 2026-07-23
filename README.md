@@ -1,5 +1,7 @@
 # 🎮 TURBO RACER ELITE - React Native Car Racing Game
 
+**Created by Sami Ul Hassan**
+
 A professional HTML5 Canvas car racing game built with pure JavaScript. Experience high-speed racing with realistic car graphics, particle effects, and multiple game modes!
 
 ## 🚗 Game Features
@@ -169,4 +171,4 @@ This project is open source and available under the MIT License.
 
 **Enjoy the race! 🏁**
 
-*Built with ❤️ using HTML5 Canvas and JavaScript*
+*Built with ❤️ by Sami Ul Hassan using HTML5 Canvas and JavaScript*
