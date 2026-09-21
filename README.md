@@ -32,7 +32,13 @@ A professional HTML5 Canvas car racing game built with pure JavaScript. Experien
 - Pick up power-ups for advantages
 - Survive as long as possible to set high scores
 
-## 🚀 How to Run the Game
+## 🌐 Play Online (Live Demo)
+
+**🎮 Play the game online:** [Live Game Link](https://samiulhassan-stack.github.io/reactnative-car-game-project/)
+
+The game is hosted on GitHub Pages and can be accessed by anyone with the link!
+
+## 🚀 How to Run the Game Locally
 
 ### Method 1: Local Server (Recommended)
 
@@ -67,6 +73,26 @@ A professional HTML5 Canvas car racing game built with pure JavaScript. Experien
 1. **Install** the "Live Server" extension in VS Code
 2. **Right-click** on `index.html`
 3. **Select** "Open with Live Server"
+
+## 🌍 Deploy Your Own Version
+
+### Deploy to GitHub Pages (Free)
+
+1. **Go to your repository** on GitHub
+2. **Click on "Settings"** tab
+3. **Scroll down to "Pages"** section (left sidebar)
+4. **Under "Source"**, select **"Deploy from a branch"**
+5. **Select branch**: `master` or `main`
+6. **Select folder**: `/ (root)`
+7. **Click "Save"**
+8. **Wait 2-3 minutes** for deployment
+9. **Your game will be live** at: `https://YOUR-USERNAME.github.io/REPO-NAME/`
+
+### Other Free Hosting Options
+
+- **Netlify**: Drag and drop deployment
+- **Vercel**: Connect your GitHub repo
+- **Surge.sh**: Quick command-line deployment
 
 ## 📁 Project Structure
 
