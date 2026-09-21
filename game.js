@@ -119,9 +119,9 @@
     leftPressed: false,
     rightPressed: false,
     nitroPressed: false,
-    leftBtn: { x: 70, y: H - 90, w: 90, h: 90 },
-    rightBtn: { x: 180, y: H - 90, w: 90, h: 90 },
-    nitroBtn: { x: W - 90, y: H - 90, w: 120, h: 90 }
+    leftBtn: { x: 80, y: H - 100, w: 100, h: 100 },
+    rightBtn: { x: 200, y: H - 100, w: 100, h: 100 },
+    nitroBtn: { x: W - 95, y: H - 100, w: 140, h: 100 }
   };
 
   // Touch event handlers for mobile
@@ -139,22 +139,51 @@
       const tx = (touch.clientX - rect.left) * (W / rect.width);
       const ty = (touch.clientY - rect.top) * (H / rect.height);
       
+      // Allow touch in all states
       if (state === STATES.PLAYING) {
         checkMobileButtons(tx, ty, true);
+      }
+      // Also handle menu clicks via touch
+      if (state === STATES.MENU) {
+        menuButtons.forEach(b => {
+          if (tx > b.x - b.w/2 && tx < b.x + b.w/2 &&
+              ty > b.y - b.h/2 && ty < b.y + b.h/2) {
+            startGame(b.mode);
+          }
+        });
       }
     }
   }
 
   function handleTouchMove(e) {
     e.preventDefault();
+    // Continuous touch detection for better responsiveness
+    const touches = e.touches;
+    if (state === STATES.PLAYING && touches.length > 0) {
+      // Reset all buttons first
+      mobileControls.leftPressed = false;
+      mobileControls.rightPressed = false;
+      mobileControls.nitroPressed = false;
+      
+      // Check all active touches
+      for (let i = 0; i < touches.length; i++) {
+        const touch = touches[i];
+        const rect = canvas.getBoundingClientRect();
+        const tx = (touch.clientX - rect.left) * (W / rect.width);
+        const ty = (touch.clientY - rect.top) * (H / rect.height);
+        checkMobileButtons(tx, ty, true);
+      }
+    }
   }
 
   function handleTouchEnd(e) {
     e.preventDefault();
-    // Release all mobile buttons when touch ends
-    mobileControls.leftPressed = false;
-    mobileControls.rightPressed = false;
-    mobileControls.nitroPressed = false;
+    // Only release if no more touches
+    if (e.touches.length === 0) {
+      mobileControls.leftPressed = false;
+      mobileControls.rightPressed = false;
+      mobileControls.nitroPressed = false;
+    }
   }
 
   function checkMobileButtons(x, y, isPressed) {
@@ -183,13 +212,13 @@
     if (state !== STATES.PLAYING) return;
     
     ctx.save();
-    ctx.globalAlpha = 0.7; // Increased visibility
     
     // Left button - Bigger and more visible
     const leftBtn = mobileControls.leftBtn;
-    ctx.fillStyle = mobileControls.leftPressed ? '#4488ff' : '#222222';
+    ctx.globalAlpha = 0.75;
+    ctx.fillStyle = mobileControls.leftPressed ? '#4488ff' : '#111111';
     ctx.strokeStyle = mobileControls.leftPressed ? '#66aaff' : '#ffffff';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.arc(leftBtn.x, leftBtn.y, leftBtn.w/2, 0, Math.PI * 2);
     ctx.fill();
@@ -198,17 +227,17 @@
     // Left arrow - Bigger
     ctx.globalAlpha = 1.0;
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 40px Arial';
+    ctx.font = 'bold 48px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('←', leftBtn.x, leftBtn.y);
     
     // Right button - Bigger and more visible
-    ctx.globalAlpha = 0.7;
+    ctx.globalAlpha = 0.75;
     const rightBtn = mobileControls.rightBtn;
-    ctx.fillStyle = mobileControls.rightPressed ? '#4488ff' : '#222222';
+    ctx.fillStyle = mobileControls.rightPressed ? '#4488ff' : '#111111';
     ctx.strokeStyle = mobileControls.rightPressed ? '#66aaff' : '#ffffff';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
     ctx.beginPath();
     ctx.arc(rightBtn.x, rightBtn.y, rightBtn.w/2, 0, Math.PI * 2);
     ctx.fill();
@@ -217,27 +246,34 @@
     // Right arrow - Bigger
     ctx.globalAlpha = 1.0;
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 40px Arial';
+    ctx.font = 'bold 48px Arial';
     ctx.fillText('→', rightBtn.x, rightBtn.y);
     
     // Nitro button - Bigger and more prominent
-    ctx.globalAlpha = 0.7;
+    ctx.globalAlpha = 0.75;
     const nitroBtn = mobileControls.nitroBtn;
-    ctx.fillStyle = mobileControls.nitroPressed ? '#ff4400' : '#222222';
+    ctx.fillStyle = mobileControls.nitroPressed ? '#ff4400' : '#111111';
     ctx.strokeStyle = mobileControls.nitroPressed ? '#ff8844' : '#ffffff';
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.roundRect(nitroBtn.x - nitroBtn.w/2, nitroBtn.y - nitroBtn.h/2, nitroBtn.w, nitroBtn.h, 12);
+    ctx.roundRect(nitroBtn.x - nitroBtn.w/2, nitroBtn.y - nitroBtn.h/2, nitroBtn.w, nitroBtn.h, 15);
     ctx.fill();
     ctx.stroke();
     
     // Nitro text - Bigger
     ctx.globalAlpha = 1.0;
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 22px Arial';
-    ctx.fillText('NITRO', nitroBtn.x, nitroBtn.y - 10);
-    ctx.font = 'bold 16px Arial';
-    ctx.fillText('🔥', nitroBtn.x, nitroBtn.y + 15);
+    ctx.font = 'bold 26px Arial';
+    ctx.fillText('NITRO', nitroBtn.x, nitroBtn.y - 12);
+    ctx.font = 'bold 20px Arial';
+    ctx.fillText('🔥', nitroBtn.x, nitroBtn.y + 18);
+    
+    // Touch indicator for debugging (shows if touch is detected)
+    if (mobileControls.leftPressed || mobileControls.rightPressed || mobileControls.nitroPressed) {
+      ctx.globalAlpha = 0.3;
+      ctx.fillStyle = '#00ff00';
+      ctx.fillRect(W/2 - 20, 10, 40, 8);
+    }
     
     ctx.restore();
   }
