@@ -139,6 +139,7 @@
 
   // Touch event handlers for mobile
   let activeTouches = new Map();
+  let lastTouchTime = 0;
 
   function getTouchPos(touch) {
     const rect = canvas.getBoundingClientRect();
@@ -148,14 +149,27 @@
     };
   }
 
+  // Prevent default touch behaviors on document
+  document.addEventListener('touchstart', function(e) {
+    lastTouchTime = Date.now();
+  }, { passive: false });
+
+  document.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+  }, { passive: false });
+
   canvas.addEventListener('touchstart', function(e) {
     e.preventDefault();
     e.stopPropagation();
+    
+    console.log('Touch detected!', e.touches.length); // Debug log
     
     for (let i = 0; i < e.changedTouches.length; i++) {
       const touch = e.changedTouches[i];
       const pos = getTouchPos(touch);
       activeTouches.set(touch.identifier, pos);
+      
+      console.log('Touch position:', pos.x, pos.y, 'State:', state); // Debug log
       
       if (state === STATES.PLAYING) {
         checkMobileButtons(pos.x, pos.y, true);
@@ -165,9 +179,26 @@
         menuButtons.forEach(b => {
           if (pos.x > b.x - b.w/2 && pos.x < b.x + b.w/2 &&
               pos.y > b.y - b.h/2 && pos.y < b.y + b.h/2) {
+            console.log('Menu button clicked:', b.label); // Debug log
             startGame(b.mode);
           }
         });
+      }
+      // Pause/Resume buttons
+      if (state === STATES.PAUSED || state === STATES.GAMEOVER) {
+        pauseButtons.forEach(b => {
+          if (pos.x > b.x - b.w/2 && pos.x < b.x + b.w/2 &&
+              pos.y > b.y - b.h/2 && pos.y < b.y + b.h/2) {
+            b.action();
+          }
+        });
+        // Game Over: Main Menu button
+        if (state === STATES.GAMEOVER) {
+          if (pos.x > W/2 - 80 && pos.x < W/2 + 80 && pos.y > H/2 + 127 && pos.y < H/2 + 173) {
+            state = STATES.MENU;
+            stopEngine();
+          }
+        }
       }
     }
   }, { passive: false });
@@ -1649,6 +1680,19 @@
 
     // Animated demo cars on menu
     drawDemoCars(menuFrame);
+    
+    // Touch Debug Indicator
+    ctx.save();
+    ctx.fillStyle = '#ffff00';
+    ctx.font = 'bold 14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Touch Events: ${activeTouches.size} | Tap buttons to play`, W/2, 280);
+    if (Date.now() - lastTouchTime < 1000) {
+      ctx.fillStyle = '#00ff00';
+      ctx.fillRect(W/2 - 30, 290, 60, 6);
+      ctx.fillText('TOUCH DETECTED!', W/2, 310);
+    }
+    ctx.restore();
   }
 
   function drawMenuButton(x, y, w, h, label, hovered, idx) {
