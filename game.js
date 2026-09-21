@@ -275,66 +275,160 @@
     
     ctx.save();
     
-    // Left button - Bigger and more visible
+    // Left button - Professional design
     const leftBtn = mobileControls.leftBtn;
-    ctx.globalAlpha = 0.8;
-    ctx.fillStyle = mobileControls.leftPressed ? '#00ff00' : '#222222';
-    ctx.strokeStyle = mobileControls.leftPressed ? '#00ff00' : '#ffffff';
-    ctx.lineWidth = 5;
+    ctx.globalAlpha = 0.85;
+    
+    // Outer glow for left button
+    ctx.shadowColor = mobileControls.leftPressed ? '#4488ff' : '#ffffff';
+    ctx.shadowBlur = mobileControls.leftPressed ? 25 : 15;
+    
+    // Button gradient background
+    const leftGrad = ctx.createRadialGradient(leftBtn.x, leftBtn.y - 10, 10, leftBtn.x, leftBtn.y, leftBtn.w/2);
+    if (mobileControls.leftPressed) {
+      leftGrad.addColorStop(0, '#5599ff');
+      leftGrad.addColorStop(0.6, '#3377ee');
+      leftGrad.addColorStop(1, '#1155cc');
+    } else {
+      leftGrad.addColorStop(0, '#404040');
+      leftGrad.addColorStop(0.6, '#2a2a2a');
+      leftGrad.addColorStop(1, '#1a1a1a');
+    }
+    
+    ctx.fillStyle = leftGrad;
     ctx.beginPath();
     ctx.arc(leftBtn.x, leftBtn.y, leftBtn.w/2, 0, Math.PI * 2);
     ctx.fill();
+    
+    // Inner shadow ring
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = mobileControls.leftPressed ? '#66aaff' : '#555555';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(leftBtn.x, leftBtn.y, leftBtn.w/2 - 5, 0, Math.PI * 2);
     ctx.stroke();
     
-    // Left arrow - Bigger
+    // Outer border
+    ctx.strokeStyle = mobileControls.leftPressed ? '#88ccff' : '#ffffff';
+    ctx.lineWidth = 4;
     ctx.globalAlpha = 1.0;
+    ctx.beginPath();
+    ctx.arc(leftBtn.x, leftBtn.y, leftBtn.w/2, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // Left arrow with shadow
+    ctx.shadowColor = '#000000';
+    ctx.shadowBlur = 5;
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 48px Arial';
+    ctx.font = 'bold 52px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('←', leftBtn.x, leftBtn.y);
+    ctx.shadowBlur = 0;
     
-    // Right button - Bigger and more visible
-    ctx.globalAlpha = 0.8;
+    // Right button - Professional design
     const rightBtn = mobileControls.rightBtn;
-    ctx.fillStyle = mobileControls.rightPressed ? '#00ff00' : '#222222';
-    ctx.strokeStyle = mobileControls.rightPressed ? '#00ff00' : '#ffffff';
-    ctx.lineWidth = 5;
+    ctx.globalAlpha = 0.85;
+    
+    // Outer glow for right button
+    ctx.shadowColor = mobileControls.rightPressed ? '#4488ff' : '#ffffff';
+    ctx.shadowBlur = mobileControls.rightPressed ? 25 : 15;
+    
+    // Button gradient background
+    const rightGrad = ctx.createRadialGradient(rightBtn.x, rightBtn.y - 10, 10, rightBtn.x, rightBtn.y, rightBtn.w/2);
+    if (mobileControls.rightPressed) {
+      rightGrad.addColorStop(0, '#5599ff');
+      rightGrad.addColorStop(0.6, '#3377ee');
+      rightGrad.addColorStop(1, '#1155cc');
+    } else {
+      rightGrad.addColorStop(0, '#404040');
+      rightGrad.addColorStop(0.6, '#2a2a2a');
+      rightGrad.addColorStop(1, '#1a1a1a');
+    }
+    
+    ctx.fillStyle = rightGrad;
     ctx.beginPath();
     ctx.arc(rightBtn.x, rightBtn.y, rightBtn.w/2, 0, Math.PI * 2);
     ctx.fill();
-    ctx.stroke();
     
-    // Right arrow - Bigger
-    ctx.globalAlpha = 1.0;
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 48px Arial';
-    ctx.fillText('→', rightBtn.x, rightBtn.y);
-    
-    // Nitro button - Bigger and more prominent
-    ctx.globalAlpha = 0.8;
-    const nitroBtn = mobileControls.nitroBtn;
-    ctx.fillStyle = mobileControls.nitroPressed ? '#00ff00' : '#222222';
-    ctx.strokeStyle = mobileControls.nitroPressed ? '#00ff00' : '#ffffff';
-    ctx.lineWidth = 5;
+    // Inner shadow ring
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = mobileControls.rightPressed ? '#66aaff' : '#555555';
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.roundRect(nitroBtn.x - nitroBtn.w/2, nitroBtn.y - nitroBtn.h/2, nitroBtn.w, nitroBtn.h, 15);
-    ctx.fill();
+    ctx.arc(rightBtn.x, rightBtn.y, rightBtn.w/2 - 5, 0, Math.PI * 2);
     ctx.stroke();
     
-    // Nitro text - Bigger
+    // Outer border
+    ctx.strokeStyle = mobileControls.rightPressed ? '#88ccff' : '#ffffff';
+    ctx.lineWidth = 4;
     ctx.globalAlpha = 1.0;
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 26px Arial';
-    ctx.fillText('NITRO', nitroBtn.x, nitroBtn.y - 12);
-    ctx.font = 'bold 20px Arial';
-    ctx.fillText('🔥', nitroBtn.x, nitroBtn.y + 18);
+    ctx.beginPath();
+    ctx.arc(rightBtn.x, rightBtn.y, rightBtn.w/2, 0, Math.PI * 2);
+    ctx.stroke();
     
-    // Debug: Show touch count
+    // Right arrow with shadow
+    ctx.shadowColor = '#000000';
+    ctx.shadowBlur = 5;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 52px Arial';
+    ctx.fillText('→', rightBtn.x, rightBtn.y);
+    ctx.shadowBlur = 0;
+    
+    // Nitro button - Enhanced design
+    const nitroBtn = mobileControls.nitroBtn;
+    ctx.globalAlpha = 0.85;
+    
+    // Outer glow for nitro
+    ctx.shadowColor = mobileControls.nitroPressed ? '#ff6600' : '#ffffff';
+    ctx.shadowBlur = mobileControls.nitroPressed ? 30 : 15;
+    
+    // Nitro gradient background
+    const nitroGrad = ctx.createLinearGradient(
+      nitroBtn.x - nitroBtn.w/2, nitroBtn.y - nitroBtn.h/2,
+      nitroBtn.x + nitroBtn.w/2, nitroBtn.y + nitroBtn.h/2
+    );
+    if (mobileControls.nitroPressed) {
+      nitroGrad.addColorStop(0, '#ff6600');
+      nitroGrad.addColorStop(0.5, '#ff4400');
+      nitroGrad.addColorStop(1, '#cc3300');
+    } else {
+      nitroGrad.addColorStop(0, '#404040');
+      nitroGrad.addColorStop(0.5, '#2a2a2a');
+      nitroGrad.addColorStop(1, '#1a1a1a');
+    }
+    
+    ctx.fillStyle = nitroGrad;
+    ctx.beginPath();
+    ctx.roundRect(nitroBtn.x - nitroBtn.w/2, nitroBtn.y - nitroBtn.h/2, nitroBtn.w, nitroBtn.h, 18);
+    ctx.fill();
+    
+    // Nitro border
+    ctx.shadowBlur = 0;
+    ctx.strokeStyle = mobileControls.nitroPressed ? '#ff8844' : '#ffffff';
+    ctx.lineWidth = 4;
     ctx.globalAlpha = 1.0;
-    ctx.fillStyle = '#ffff00';
-    ctx.font = 'bold 16px Arial';
+    ctx.beginPath();
+    ctx.roundRect(nitroBtn.x - nitroBtn.w/2, nitroBtn.y - nitroBtn.h/2, nitroBtn.w, nitroBtn.h, 18);
+    ctx.stroke();
+    
+    // Nitro text with shadow
+    ctx.shadowColor = '#000000';
+    ctx.shadowBlur = 4;
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 28px Arial';
+    ctx.fillText('NITRO', nitroBtn.x, nitroBtn.y - 12);
+    ctx.font = 'bold 22px Arial';
+    ctx.fillText('⚡', nitroBtn.x, nitroBtn.y + 20);
+    ctx.shadowBlur = 0;
+    
+    // Touch counter (debug)
+    ctx.globalAlpha = 0.8;
+    ctx.fillStyle = activeTouches.size > 0 ? '#00ff00' : '#ffff00';
+    ctx.font = 'bold 14px Arial';
     ctx.textAlign = 'center';
+    ctx.shadowColor = '#000000';
+    ctx.shadowBlur = 3;
     ctx.fillText(`Touches: ${activeTouches.size}`, W/2, 30);
     
     ctx.restore();
