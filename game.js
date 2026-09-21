@@ -114,6 +114,126 @@
   });
   window.addEventListener('keyup', e => { keys[e.code] = false; });
 
+  // ── Mobile Touch Controls ─────────────────────────────────
+  const mobileControls = {
+    leftPressed: false,
+    rightPressed: false,
+    nitroPressed: false,
+    leftBtn: { x: 60, y: H - 80, w: 70, h: 70 },
+    rightBtn: { x: 150, y: H - 80, w: 70, h: 70 },
+    nitroBtn: { x: W - 80, y: H - 80, w: 100, h: 70 }
+  };
+
+  // Touch event handlers for mobile
+  canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+  canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+  canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+  canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+  function handleTouchStart(e) {
+    e.preventDefault();
+    const touches = e.touches;
+    for (let i = 0; i < touches.length; i++) {
+      const touch = touches[i];
+      const rect = canvas.getBoundingClientRect();
+      const tx = (touch.clientX - rect.left) * (W / rect.width);
+      const ty = (touch.clientY - rect.top) * (H / rect.height);
+      
+      if (state === STATES.PLAYING) {
+        checkMobileButtons(tx, ty, true);
+      }
+    }
+  }
+
+  function handleTouchMove(e) {
+    e.preventDefault();
+  }
+
+  function handleTouchEnd(e) {
+    e.preventDefault();
+    // Release all mobile buttons when touch ends
+    mobileControls.leftPressed = false;
+    mobileControls.rightPressed = false;
+    mobileControls.nitroPressed = false;
+  }
+
+  function checkMobileButtons(x, y, isPressed) {
+    const { leftBtn, rightBtn, nitroBtn } = mobileControls;
+    
+    // Check Left button
+    if (x > leftBtn.x - leftBtn.w/2 && x < leftBtn.x + leftBtn.w/2 &&
+        y > leftBtn.y - leftBtn.h/2 && y < leftBtn.y + leftBtn.h/2) {
+      mobileControls.leftPressed = isPressed;
+    }
+    
+    // Check Right button
+    if (x > rightBtn.x - rightBtn.w/2 && x < rightBtn.x + rightBtn.w/2 &&
+        y > rightBtn.y - rightBtn.h/2 && y < rightBtn.y + rightBtn.h/2) {
+      mobileControls.rightPressed = isPressed;
+    }
+    
+    // Check Nitro button
+    if (x > nitroBtn.x - nitroBtn.w/2 && x < nitroBtn.x + nitroBtn.w/2 &&
+        y > nitroBtn.y - nitroBtn.h/2 && y < nitroBtn.y + nitroBtn.h/2) {
+      mobileControls.nitroPressed = isPressed;
+    }
+  }
+
+  function drawMobileControls() {
+    if (state !== STATES.PLAYING) return;
+    
+    ctx.save();
+    ctx.globalAlpha = 0.6;
+    
+    // Left button
+    const leftBtn = mobileControls.leftBtn;
+    ctx.fillStyle = mobileControls.leftPressed ? '#4488ff' : '#333333';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(leftBtn.x, leftBtn.y, leftBtn.w/2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    
+    // Left arrow
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 28px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('←', leftBtn.x, leftBtn.y);
+    
+    // Right button
+    const rightBtn = mobileControls.rightBtn;
+    ctx.fillStyle = mobileControls.rightPressed ? '#4488ff' : '#333333';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(rightBtn.x, rightBtn.y, rightBtn.w/2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    
+    // Right arrow
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('→', rightBtn.x, rightBtn.y);
+    
+    // Nitro button
+    const nitroBtn = mobileControls.nitroBtn;
+    ctx.fillStyle = mobileControls.nitroPressed ? '#ff4400' : '#333333';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(nitroBtn.x - nitroBtn.w/2, nitroBtn.y - nitroBtn.h/2, nitroBtn.w, nitroBtn.h, 10);
+    ctx.fill();
+    ctx.stroke();
+    
+    // Nitro text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 18px Arial';
+    ctx.fillText('NITRO', nitroBtn.x, nitroBtn.y);
+    
+    ctx.restore();
+  }
+
   // ── Utility ───────────────────────────────────────────────
   function rand(min, max) { return Math.random() * (max - min) + min; }
   function randInt(min, max) { return Math.floor(rand(min, max + 1)); }
@@ -683,17 +803,19 @@
   }
 
   function updatePlayer(dt) {
-    // Lane input
+    // Lane input (keyboard OR mobile)
     if (!player.transitioning) {
-      if (keys['ArrowLeft'] && player.lane > 0) {
+      if ((keys['ArrowLeft'] || mobileControls.leftPressed) && player.lane > 0) {
         player.lane--;
         player.targetX = LANE_X[player.lane];
         player.transitioning = true;
+        mobileControls.leftPressed = false; // Reset after use
       }
-      if (keys['ArrowRight'] && player.lane < 2) {
+      if ((keys['ArrowRight'] || mobileControls.rightPressed) && player.lane < 2) {
         player.lane++;
         player.targetX = LANE_X[player.lane];
         player.transitioning = true;
+        mobileControls.rightPressed = false; // Reset after use
       }
     }
     // Smooth lane transition
@@ -706,8 +828,8 @@
       }
     }
 
-    // Nitro
-    if (keys['Space'] && player.nitro > 0) {
+    // Nitro (keyboard OR mobile)
+    if ((keys['Space'] || mobileControls.nitroPressed) && player.nitro > 0) {
       if (!player.nitroActive) { player.nitroActive = true; playNitro(); }
       player.nitro = Math.max(0, player.nitro - 0.8);
       if (player.nitro === 0) player.nitroActive = false;
@@ -1269,6 +1391,7 @@
     drawPlayer();
     drawFloatTexts();
     drawHUD(gs);
+    drawMobileControls(); // Draw mobile touch buttons
   }
 
 
