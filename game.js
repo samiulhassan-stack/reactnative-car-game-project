@@ -11,6 +11,19 @@
   canvas.width  = 500;
   canvas.height = 700;
 
+  // Make canvas responsive for mobile
+  function resizeCanvas() {
+    const container = canvas.parentElement;
+    const scale = Math.min(
+      window.innerWidth / canvas.width,
+      window.innerHeight / canvas.height
+    );
+    canvas.style.width = (canvas.width * scale) + 'px';
+    canvas.style.height = (canvas.height * scale) + 'px';
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
   // ── Constants ─────────────────────────────────────────────
   const W = canvas.width;
   const H = canvas.height;
@@ -125,66 +138,84 @@
   };
 
   // Touch event handlers for mobile
-  canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
-  canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
-  canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
-  canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+  let activeTouches = new Map();
 
-  function handleTouchStart(e) {
+  function getTouchPos(touch) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (touch.clientX - rect.left) * (canvas.width / rect.width),
+      y: (touch.clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  canvas.addEventListener('touchstart', function(e) {
     e.preventDefault();
-    const touches = e.touches;
-    for (let i = 0; i < touches.length; i++) {
-      const touch = touches[i];
-      const rect = canvas.getBoundingClientRect();
-      const tx = (touch.clientX - rect.left) * (W / rect.width);
-      const ty = (touch.clientY - rect.top) * (H / rect.height);
+    e.stopPropagation();
+    
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const touch = e.changedTouches[i];
+      const pos = getTouchPos(touch);
+      activeTouches.set(touch.identifier, pos);
       
-      // Allow touch in all states
       if (state === STATES.PLAYING) {
-        checkMobileButtons(tx, ty, true);
+        checkMobileButtons(pos.x, pos.y, true);
       }
-      // Also handle menu clicks via touch
+      // Menu button handling
       if (state === STATES.MENU) {
         menuButtons.forEach(b => {
-          if (tx > b.x - b.w/2 && tx < b.x + b.w/2 &&
-              ty > b.y - b.h/2 && ty < b.y + b.h/2) {
+          if (pos.x > b.x - b.w/2 && pos.x < b.x + b.w/2 &&
+              pos.y > b.y - b.h/2 && pos.y < b.y + b.h/2) {
             startGame(b.mode);
           }
         });
       }
     }
-  }
+  }, { passive: false });
 
-  function handleTouchMove(e) {
+  canvas.addEventListener('touchmove', function(e) {
     e.preventDefault();
-    // Continuous touch detection for better responsiveness
-    const touches = e.touches;
-    if (state === STATES.PLAYING && touches.length > 0) {
-      // Reset all buttons first
+    e.stopPropagation();
+    
+    if (state === STATES.PLAYING) {
+      // Reset buttons
       mobileControls.leftPressed = false;
       mobileControls.rightPressed = false;
       mobileControls.nitroPressed = false;
       
       // Check all active touches
-      for (let i = 0; i < touches.length; i++) {
-        const touch = touches[i];
-        const rect = canvas.getBoundingClientRect();
-        const tx = (touch.clientX - rect.left) * (W / rect.width);
-        const ty = (touch.clientY - rect.top) * (H / rect.height);
-        checkMobileButtons(tx, ty, true);
+      for (let i = 0; i < e.touches.length; i++) {
+        const touch = e.touches[i];
+        const pos = getTouchPos(touch);
+        activeTouches.set(touch.identifier, pos);
+        checkMobileButtons(pos.x, pos.y, true);
       }
     }
-  }
+  }, { passive: false });
 
-  function handleTouchEnd(e) {
+  canvas.addEventListener('touchend', function(e) {
     e.preventDefault();
-    // Only release if no more touches
-    if (e.touches.length === 0) {
+    e.stopPropagation();
+    
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      const touch = e.changedTouches[i];
+      activeTouches.delete(touch.identifier);
+    }
+    
+    // Release buttons if no touches left
+    if (activeTouches.size === 0) {
       mobileControls.leftPressed = false;
       mobileControls.rightPressed = false;
       mobileControls.nitroPressed = false;
     }
-  }
+  }, { passive: false });
+
+  canvas.addEventListener('touchcancel', function(e) {
+    e.preventDefault();
+    activeTouches.clear();
+    mobileControls.leftPressed = false;
+    mobileControls.rightPressed = false;
+    mobileControls.nitroPressed = false;
+  }, { passive: false });
 
   function checkMobileButtons(x, y, isPressed) {
     const { leftBtn, rightBtn, nitroBtn } = mobileControls;
@@ -215,10 +246,10 @@
     
     // Left button - Bigger and more visible
     const leftBtn = mobileControls.leftBtn;
-    ctx.globalAlpha = 0.75;
-    ctx.fillStyle = mobileControls.leftPressed ? '#4488ff' : '#111111';
-    ctx.strokeStyle = mobileControls.leftPressed ? '#66aaff' : '#ffffff';
-    ctx.lineWidth = 4;
+    ctx.globalAlpha = 0.8;
+    ctx.fillStyle = mobileControls.leftPressed ? '#00ff00' : '#222222';
+    ctx.strokeStyle = mobileControls.leftPressed ? '#00ff00' : '#ffffff';
+    ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.arc(leftBtn.x, leftBtn.y, leftBtn.w/2, 0, Math.PI * 2);
     ctx.fill();
@@ -233,11 +264,11 @@
     ctx.fillText('←', leftBtn.x, leftBtn.y);
     
     // Right button - Bigger and more visible
-    ctx.globalAlpha = 0.75;
+    ctx.globalAlpha = 0.8;
     const rightBtn = mobileControls.rightBtn;
-    ctx.fillStyle = mobileControls.rightPressed ? '#4488ff' : '#111111';
-    ctx.strokeStyle = mobileControls.rightPressed ? '#66aaff' : '#ffffff';
-    ctx.lineWidth = 4;
+    ctx.fillStyle = mobileControls.rightPressed ? '#00ff00' : '#222222';
+    ctx.strokeStyle = mobileControls.rightPressed ? '#00ff00' : '#ffffff';
+    ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.arc(rightBtn.x, rightBtn.y, rightBtn.w/2, 0, Math.PI * 2);
     ctx.fill();
@@ -250,11 +281,11 @@
     ctx.fillText('→', rightBtn.x, rightBtn.y);
     
     // Nitro button - Bigger and more prominent
-    ctx.globalAlpha = 0.75;
+    ctx.globalAlpha = 0.8;
     const nitroBtn = mobileControls.nitroBtn;
-    ctx.fillStyle = mobileControls.nitroPressed ? '#ff4400' : '#111111';
-    ctx.strokeStyle = mobileControls.nitroPressed ? '#ff8844' : '#ffffff';
-    ctx.lineWidth = 4;
+    ctx.fillStyle = mobileControls.nitroPressed ? '#00ff00' : '#222222';
+    ctx.strokeStyle = mobileControls.nitroPressed ? '#00ff00' : '#ffffff';
+    ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.roundRect(nitroBtn.x - nitroBtn.w/2, nitroBtn.y - nitroBtn.h/2, nitroBtn.w, nitroBtn.h, 15);
     ctx.fill();
@@ -268,12 +299,12 @@
     ctx.font = 'bold 20px Arial';
     ctx.fillText('🔥', nitroBtn.x, nitroBtn.y + 18);
     
-    // Touch indicator for debugging (shows if touch is detected)
-    if (mobileControls.leftPressed || mobileControls.rightPressed || mobileControls.nitroPressed) {
-      ctx.globalAlpha = 0.3;
-      ctx.fillStyle = '#00ff00';
-      ctx.fillRect(W/2 - 20, 10, 40, 8);
-    }
+    // Debug: Show touch count
+    ctx.globalAlpha = 1.0;
+    ctx.fillStyle = '#ffff00';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Touches: ${activeTouches.size}`, W/2, 30);
     
     ctx.restore();
   }
