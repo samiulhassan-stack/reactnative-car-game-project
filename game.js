@@ -119,9 +119,9 @@
     leftPressed: false,
     rightPressed: false,
     nitroPressed: false,
-    leftBtn: { x: 60, y: H - 80, w: 70, h: 70 },
-    rightBtn: { x: 150, y: H - 80, w: 70, h: 70 },
-    nitroBtn: { x: W - 80, y: H - 80, w: 100, h: 70 }
+    leftBtn: { x: 70, y: H - 90, w: 90, h: 90 },
+    rightBtn: { x: 180, y: H - 90, w: 90, h: 90 },
+    nitroBtn: { x: W - 90, y: H - 90, w: 120, h: 90 }
   };
 
   // Touch event handlers for mobile
@@ -183,53 +183,61 @@
     if (state !== STATES.PLAYING) return;
     
     ctx.save();
-    ctx.globalAlpha = 0.6;
+    ctx.globalAlpha = 0.7; // Increased visibility
     
-    // Left button
+    // Left button - Bigger and more visible
     const leftBtn = mobileControls.leftBtn;
-    ctx.fillStyle = mobileControls.leftPressed ? '#4488ff' : '#333333';
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
+    ctx.fillStyle = mobileControls.leftPressed ? '#4488ff' : '#222222';
+    ctx.strokeStyle = mobileControls.leftPressed ? '#66aaff' : '#ffffff';
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.arc(leftBtn.x, leftBtn.y, leftBtn.w/2, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
     
-    // Left arrow
+    // Left arrow - Bigger
+    ctx.globalAlpha = 1.0;
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 28px Arial';
+    ctx.font = 'bold 40px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('←', leftBtn.x, leftBtn.y);
     
-    // Right button
+    // Right button - Bigger and more visible
+    ctx.globalAlpha = 0.7;
     const rightBtn = mobileControls.rightBtn;
-    ctx.fillStyle = mobileControls.rightPressed ? '#4488ff' : '#333333';
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
+    ctx.fillStyle = mobileControls.rightPressed ? '#4488ff' : '#222222';
+    ctx.strokeStyle = mobileControls.rightPressed ? '#66aaff' : '#ffffff';
+    ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.arc(rightBtn.x, rightBtn.y, rightBtn.w/2, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
     
-    // Right arrow
+    // Right arrow - Bigger
+    ctx.globalAlpha = 1.0;
     ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 40px Arial';
     ctx.fillText('→', rightBtn.x, rightBtn.y);
     
-    // Nitro button
+    // Nitro button - Bigger and more prominent
+    ctx.globalAlpha = 0.7;
     const nitroBtn = mobileControls.nitroBtn;
-    ctx.fillStyle = mobileControls.nitroPressed ? '#ff4400' : '#333333';
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
+    ctx.fillStyle = mobileControls.nitroPressed ? '#ff4400' : '#222222';
+    ctx.strokeStyle = mobileControls.nitroPressed ? '#ff8844' : '#ffffff';
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.roundRect(nitroBtn.x - nitroBtn.w/2, nitroBtn.y - nitroBtn.h/2, nitroBtn.w, nitroBtn.h, 10);
+    ctx.roundRect(nitroBtn.x - nitroBtn.w/2, nitroBtn.y - nitroBtn.h/2, nitroBtn.w, nitroBtn.h, 12);
     ctx.fill();
     ctx.stroke();
     
-    // Nitro text
+    // Nitro text - Bigger
+    ctx.globalAlpha = 1.0;
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 18px Arial';
-    ctx.fillText('NITRO', nitroBtn.x, nitroBtn.y);
+    ctx.font = 'bold 22px Arial';
+    ctx.fillText('NITRO', nitroBtn.x, nitroBtn.y - 10);
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText('🔥', nitroBtn.x, nitroBtn.y + 15);
     
     ctx.restore();
   }
